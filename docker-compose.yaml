@@ -50,16 +50,16 @@ services:
     depends_on:
       - player-db
 
-  # currency-ms:
-  #   build:
-  #     context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git
-  #   environment:
-  #     - DATABASE_URL=postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
-  #   ports:
-  #     - "60601:3000"
-  #   depends_on:
-  #     - currency-db
-  #     - player-ms
+  currency-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
+    ports:
+      - "60601:3000"
+    depends_on:
+      - currency-db
+      - player-ms
 
 volumes:
   player-db-data:
