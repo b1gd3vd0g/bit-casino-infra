@@ -1,0 +1,66 @@
+################
+# PORT MAPPING #
+################
+# DATABASES:
+# - player-db: 54320
+# - currency-db: 54321
+
+# SERVICES:
+# - player-ms: 60600
+# - currency-ms: 60601
+
+
+services:
+  #############
+  # Databases # 
+  #############
+  player-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${PLAYER_DB_PASSWORD}
+      POSTGRES_DB: ${PLAYER_DB_NAME}
+    volumes:
+      - player-db-data:/var/lib/postgresql/data
+    ports:
+      - "54320:5432"
+  
+  # currency-db:
+  #   image: postgres:16
+  #   environment:
+  #     POSTGRES_USER: ${DB_USER}
+  #     POSTGRES_PASSWORD: ${CURRENCY_DB_PASSWORD}
+  #     POSTGRES_DB: ${CURRENCY_DB_NAME}
+  #   volumes:
+  #     - currency-db-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "54321:5432"
+  
+  #################
+  # Microservices #
+  #################
+  player-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-player-ms.git#compose
+    environment:
+      - DATABASE_URL=postgres://${DB_USER}:${PLAYER_DB_PASSWORD}@player-db:5432/${PLAYER_DB_NAME}
+      - JWT_SECRET=${PLAYER_JWT_SECRET}
+    ports:
+      - "60600:3000"
+    depends_on:
+      - player-db
+
+  # currency-ms:
+  #   build:
+  #     context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git#compose
+  #   environment:
+  #     - DATABASE_URL=postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
+  #   ports:
+  #     - "60601:3000"
+  #   depends_on:
+  #     - currency-db
+  #     - player-ms
+
+volumes:
+  player-db-data:
+  currency-db-data:
