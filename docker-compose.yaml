@@ -36,6 +36,32 @@ services:
     ports:
       - "54321:5432"
   
+  ##############
+  # Migrations #
+  ##############
+  player-migration:
+    profiles: ["migrate"]
+    build:
+      context: ./player
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${PLAYER_DB_PASSWORD}@player-db:5432/${PLAYER_DB_NAME}
+    depends_on:
+      - player-db
+    restart: "no"
+    command: >
+      sh -lc "sqlx migrate run"
+  currency-migration:
+    profiles: ["migrate"]
+    build:
+      context: ./currency
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
+    depends_on:
+      - currency-db
+    restart: "no"
+    command: >
+      sh -lc "sqlx migrate run"
+
   #################
   # Microservices #
   #################
