@@ -23,7 +23,7 @@ services:
     volumes:
       - player-db-data:/var/lib/postgresql/data
     ports:
-      - "54320:5432"
+      - 54320:5432
   
   currency-db:
     image: postgres:16
@@ -34,8 +34,17 @@ services:
     volumes:
       - currency-db-data:/var/lib/postgresql/data
     ports:
-      - "54321:5432"
+      - 54321:5432
   
+  redis:
+    image: redis:7-alpine
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - redis-data:/data
+    ports:
+      - 63790:6379
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
   ##############
   # Migrations #
   ##############
@@ -74,7 +83,7 @@ services:
       - DATABASE_URL=postgres://${DB_USER}:${PLAYER_DB_PASSWORD}@player-db:5432/${PLAYER_DB_NAME}
       - JWT_SECRET=${PLAYER_JWT_SECRET}
     ports:
-      - "60600:3000"
+      - 60600:3000
     depends_on:
       - player-db
 
@@ -84,7 +93,7 @@ services:
     environment:
       - DATABASE_URL=postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
     ports:
-      - "60601:3000"
+      - 60601:3000
     depends_on:
       - currency-db
       - player-ms
@@ -104,3 +113,4 @@ services:
 volumes:
   player-db-data:
   currency-db-data:
+  redis-data:
