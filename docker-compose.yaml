@@ -4,11 +4,11 @@
 # DATABASES:
 # - player-db: 54320
 # - currency-db: 54321
-
-# SERVICES:
+# MICROSERVICES:
 # - player-ms: 60600
 # - currency-ms: 60601
-
+# FRONTEND:
+# - frontend: 60000
 
 services:
   #############
@@ -39,6 +39,8 @@ services:
   ##############
   # Migrations #
   ##############
+  # These only run when COMPOSE_PROFILES=migrate
+  # These should be run once per environment setup. Refer to README.
   player-migration:
     profiles: ["migrate"]
     build:
@@ -86,7 +88,19 @@ services:
     depends_on:
       - currency-db
       - player-ms
-
+  
+  ############
+  # Frontend #
+  ############
+  frontend:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-frontend.git
+    ports:
+      - 60000:80
+    depends_on:
+      - currency-ms
+      - player-ms
+      
 volumes:
   player-db-data:
   currency-db-data:
