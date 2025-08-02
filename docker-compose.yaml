@@ -61,6 +61,7 @@ services:
     restart: "no"
     command: >
       sh -lc "sqlx migrate run"
+
   currency-migration:
     profiles: ["migrate"]
     build:
@@ -97,6 +98,17 @@ services:
     depends_on:
       - currency-db
       - player-ms
+
+  reward-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-reward-ms.git
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - 60602:3000
+    depends_on:
+      - currency-ms
+      - redis
   
   ############
   # Frontend #
