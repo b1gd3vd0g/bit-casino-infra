@@ -35,7 +35,7 @@ CURRENCY_DB_NAME=bit_casino_currency_db
 REDIS_PASSWORD=password3
 ```
 
-I have provided 4 bash scripts in the project route which will configure a working environment (including databases) where you can test **Bit Casino**
+I have provided 4 bash scripts in the project root which provide easy control over a working environment (including databases) where you can test all **Bit Casino** services together locally.
 
 - `create` - Build all the containers by referencing their github repo's master branch, and perform database migrations (essential for first-time deployments, or after running `wipe`)
 - `refresh` - Build all the containers by referencing their github repo's master branch. Assumes that a data migration has already been done. Rebuilds the database from the volumes.
