@@ -37,8 +37,9 @@ REDIS_PASSWORD=password3
 
 I have provided 4 bash scripts in the project root which provide easy control over a working environment (including databases) where you can test all **Bit Casino** services together locally.
 
-- `create` - Build all the containers by referencing their github repo's master branch, and perform database migrations (essential for first-time deployments, or after running `wipe`)
-- `refresh` - Build all the containers by referencing their github repo's master branch. Assumes that a data migration has already been done. Rebuilds the database from the volumes.
+- `create` - Build all the containers, and perform database migrations (essential for first-time deployments, or after running `wipe`)
+- `refresh` - Build all the containers. Rebuilds the database from the volumes.
+  - **Note**: This will not work unless `create` has been run at least once.
 - `stop` - Stop all containers running. This will stop taking up CPU resources, but it will maintain the database state in a persistent volume.
 - `wipe` - Stop all containers running, and erase all persistent volumes, permanently deleting any data the app was using.
 
