@@ -2,17 +2,20 @@
 # PORT MAPPING #
 ################
 # DATABASES:
-# - player-db: 54320
-# - currency-db: 54321
+# - player-db:    54320
+# - currency-db:  54321
+# - redis:        63790
 # MICROSERVICES:
-# - player-ms: 60600
-# - currency-ms: 60601
+# - player-ms:    60600
+# - currency-ms:  60601
+# - reward-ms:    60602
+# - slots-ms:     60603
 # FRONTEND:
-# - frontend: 60000
+# - frontend:     60000
 
 services:
   #############
-  # Databases # 
+  # Databases #
   #############
   player-db:
     image: postgres:16
@@ -24,7 +27,7 @@ services:
       - player-db-data:/var/lib/postgresql/data
     ports:
       - 54320:5432
-  
+
   currency-db:
     image: postgres:16
     environment:
@@ -35,7 +38,7 @@ services:
       - currency-db-data:/var/lib/postgresql/data
     ports:
       - 54321:5432
-  
+
   redis:
     image: redis:7-alpine
     environment:
@@ -44,7 +47,15 @@ services:
       - redis-data:/data
     ports:
       - 63790:6379
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    command:
+      [
+        "redis-server",
+        "--appendonly",
+        "yes",
+        "--requirepass",
+        "${REDIS_PASSWORD}",
+      ]
+
   ##############
   # Migrations #
   ##############
@@ -83,6 +94,7 @@ services:
     environment:
       - DATABASE_URL=postgres://${DB_USER}:${PLAYER_DB_PASSWORD}@player-db:5432/${PLAYER_DB_NAME}
       - JWT_SECRET=${PLAYER_JWT_SECRET}
+      - STAGE=compose
     ports:
       - 60600:3000
     depends_on:
@@ -90,9 +102,10 @@ services:
 
   currency-ms:
     build:
-      context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git
+      context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git#master
     environment:
       - DATABASE_URL=postgres://${DB_USER}:${CURRENCY_DB_PASSWORD}@currency-db:5432/${CURRENCY_DB_NAME}
+      - STAGE=compose
     ports:
       - 60601:3000
     depends_on:
@@ -101,27 +114,39 @@ services:
 
   reward-ms:
     build:
-      context: https://github.com/b1gd3vd0g/bit-casino-reward-ms.git
+      context: https://github.com/b1gd3vd0g/bit-casino-reward-ms.git#master
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - STAGE=compose
     ports:
       - 60602:3000
     depends_on:
       - currency-ms
       - redis
-  
+
+  slots-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-slots-ms.git#master
+    environment:
+      - STAGE=compose
+    ports:
+      - 60603:3000
+    depends_on:
+      - player-ms
+      - currency-ms
+
   ############
   # Frontend #
   ############
   frontend:
     build:
-      context: https://github.com/b1gd3vd0g/bit-casino-frontend.git
+      context: https://github.com/b1gd3vd0g/bit-casino-frontend.git#master
     ports:
       - 60000:80
     depends_on:
       - currency-ms
       - player-ms
-      
+
 volumes:
   player-db-data:
   currency-db-data:
