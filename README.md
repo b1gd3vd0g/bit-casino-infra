@@ -1,10 +1,13 @@
-# Deploy Bit Casino Infrastructure
+# Bit Casino -- Infrastructure
 
-This repository contains a way for users to deploy this application on their own devices using Docker compose. In the future, it may demonstrate other methods of deployment, including terraform -> AWS, Kubernetes, etc.
+> [!NOTE]
+> This service currently provides the functionality to run all bit casino services together in order to test locally using **Docker Compose**.\
+> Soon, the functionality will be added to this repository to **deploy the app to a live production environment**.
 
-## Test locally with Docker compose
+## Test locally with Docker Compose
 
 ### Requires:
+
 - Docker is installed.
 
 ### Set up the containers:
@@ -28,40 +31,35 @@ PLAYER_DB_NAME=bit_casino_player_db
 
 CURRENCY_DB_PASSWORD=password2
 CURRENCY_DB_NAME=bit_casino_currency_db
+
+REDIS_PASSWORD=password3
 ```
 
-The **first time** this is done on your machine, it is important that you run the database migrations in order to set up the tables, so that the APIs can interact with the databases.
+I have provided 4 bash scripts in the project route which will configure a working environment (including databases) where you can test **Bit Casino**
 
-If a migration has already been completed, ignore this step.
-
-```bash
-# Start the databases
-docker compose up -d player-db currency-db
-# Run the migration containers, which will stop after completion.
-COMPOSE_PROFILES=migrate docker compose run --rm player-migration
-COMPOSE_PROFILES=migrate docker compose run --rm currency-migration
-```
-
-Finally, run docker compose in order to start the containers and network.
-
-```bash
-docker compose up --build
-```
-
-This creates and starts all the necessary containers, which can interact with each other seamlessly.
+- `create` - Build all the containers by referencing their github repo's master branch, and perform database migrations (essential for first-time deployments, or after running `wipe`)
+- `refresh` - Build all the containers by referencing their github repo's master branch. Assumes that a data migration has already been done. Rebuilds the database from the volumes.
+- `stop` - Stop all containers running. This will stop taking up CPU resources, but it will maintain the database state in a persistent volume.
+- `wipe` - Stop all containers running, and erase all persistent volumes, permanently deleting any data the app was using.
 
 ### Testing
 
 Running docker compose will expose the following ports on localhost which can be used to access any of the containers:
 
-container   | localhost port 
------------ | --------------
-player-db   | 54320
-currency-db | 54321
-player-ms   | 60600
-currency-ms | 60601
+| **container** | **localhost port** |
+| ------------- | ------------------ |
+| player-db     | `54_320`           |
+| currency-db   | `54_321`           |
+| redis         | `63_790`           |
+| player-ms     | `60_600`           |
+| currency-ms   | `60_601`           |
+| reward-ms     | `60_602`           |
+| slots-ms      | `60_603`           |
+| frontend      | `60_000`           |
 
-So you could test making a call to the player microservice to create a new account:
+The easiest way to interact with the application is through the frontend, by visiting `localhost:60000` in your browser.
+
+You could also test the microservices by themselves. For example, if you wanted to create a new player account:
 
 ```bash
 curl -X POST http://localhost:60600 \
@@ -69,12 +67,10 @@ curl -X POST http://localhost:60600 \
 -d '{"username":"testuser", "password": "p455W0rd#", "email": "user@mail.com"}'
 ```
 
-If the previous request prints something like
+If the output looks anything like this:
 
 ```json
-{"token":"abc.def.ghi"}
-``` 
+{ "token": "abc.def.ghi" }
+```
 
-then you have created a new user "testuser" in your database, which will
-persist even when your containers are stopped.
-
+Then you have successfully created a new player account.
