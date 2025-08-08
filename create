@@ -1,0 +1,3 @@
+bash ./refresh
+COMPOSE_PROFILES=migrate docker compose run --rm player-migration
+COMPOSE_PROFILES=migrate docker compose run --rm currency-migration
