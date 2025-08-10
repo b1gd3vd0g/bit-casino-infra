@@ -1,5 +1,10 @@
 # Make a certificate for people visiting the frontend website.
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
 resource "aws_acm_certificate" "fe_cert" {
   provider          = aws.us_east_1
   domain_name       = var.frontend_domain
@@ -10,7 +15,7 @@ resource "aws_acm_certificate" "fe_cert" {
 
 resource "aws_route53_record" "cert_validation" {
   for_each = {
-    for dvo in aws_acm_certificate.fecert.domain_validation_options :
+    for dvo in aws_acm_certificate.fe_cert.domain_validation_options :
     dvo.domain_name => {
       name   = dvo.resource_record_name
       type   = dvo.resource_record_type
