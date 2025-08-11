@@ -1,0 +1,42 @@
+# This script is used to run the backend on the EC2 instance.
+
+services:
+  player-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-player-ms.git#master
+    environment:
+      - DATABASE_URL=${PLAYER_DATABASE_URL}
+      - JWT_SECRET=${PLAYER_JWT_SECRET}
+      - STAGE=production
+    ports:
+      - 60600:3000
+    restart: always
+
+  currency-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-currency-ms.git#master
+    environment:
+      - DATABASE_URL=${CURRENCY_DATABASE_URL}
+      - STAGE=production
+    ports:
+      - 60601:3000
+    restart: always
+
+  reward-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-reward-ms.git#master
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - STAGE=production
+    ports:
+      - 60602:3000
+    restart: always
+
+  slots-ms:
+    build:
+      context: https://github.com/b1gd3vd0g/bit-casino-slots-ms.git#master
+    environment:
+      - STAGE=production
+    ports:
+      - 60603:3000
+    restart: always
