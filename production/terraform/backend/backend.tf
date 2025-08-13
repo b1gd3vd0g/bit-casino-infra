@@ -92,7 +92,7 @@ resource "aws_instance" "backend" {
             yum install -y git
             git clone https://github.com/b1gd3vd0g/bit-casino-infra.git /home/ec2-user/bit-casino
             cd /home/ec2-user/bit-casino/production/
-            docker compose up --build -d
+            docker-compose up --build -d
             EOF
 }
 
