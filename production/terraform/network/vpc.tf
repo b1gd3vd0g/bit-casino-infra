@@ -22,6 +22,13 @@ resource "aws_subnet" "private_a" {
   availability_zone       = "us-west-1a"
 }
 
+resource "aws_subnet" "private_b" {
+  vpc_id                  = aws_vpc.bit_casino.id
+  cidr_block              = "10.0.102.0/24"
+  map_public_ip_on_launch = false
+  availability_zone       = "us-west-1c"
+}
+
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.bit_casino.id
   route {
