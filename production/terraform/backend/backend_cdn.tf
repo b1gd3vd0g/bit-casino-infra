@@ -82,24 +82,6 @@ data "aws_ip_ranges" "cloudfront" {
   services = ["CLOUDFRONT"]
 }
 
-resource "aws_security_group_rule" "allow_cloudfront" {
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  security_group_id = aws_security_group.backend_sg.id
-  cidr_blocks       = ["0.0.0.0/0"]
-}
-
-resource "aws_security_group_rule" "allow_ssh" {
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  security_group_id = aws_security_group.backend_sg.id
-  cidr_blocks       = ["${var.my_ip}/32"]
-}
-
 resource "aws_route53_record" "a_records" {
   for_each = toset([var.backend_domain, "www.${var.backend_domain}"])
 
