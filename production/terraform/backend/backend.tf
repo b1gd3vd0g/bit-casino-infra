@@ -103,3 +103,7 @@ output "backend_ec2_ip" {
 output "backend_private_key_path" {
   value = local_file.backend_private_key.filename
 }
+
+output "backend_sg_id" {
+  value = aws_security_group.backend_sg.id
+}
