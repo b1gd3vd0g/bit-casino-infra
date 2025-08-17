@@ -44,11 +44,3 @@ resource "aws_elasticache_cluster" "redis" {
   security_group_ids = [aws_security_group.redis_sg.id]
 }
 
-# Outputs: How to access these databases
-output "rds_endpoint" {
-  value = aws_db_instance.postgres.address
-}
-
-output "redis_endpoint" {
-  value = aws_elasticache_cluster.redis.cache_nodes[0].address
-}
