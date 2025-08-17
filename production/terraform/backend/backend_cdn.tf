@@ -4,7 +4,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   default_root_object = ""
 
   origin {
-    origin_id   = "S3Origin"
+    origin_id   = "ApiOrigin"
     domain_name = var.backend_domain
 
     custom_origin_config {
@@ -16,9 +16,9 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   default_cache_behavior {
-    allowed_methods          = ["GET", "HEAD"]
+    allowed_methods          = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods           = ["GET", "HEAD"]
-    target_origin_id         = "S3Origin"
+    target_origin_id         = "ApiOrigin"
     viewer_protocol_policy   = "redirect-to-https"
     cache_policy_id          = aws_cloudfront_cache_policy.no_cache.id
     origin_request_policy_id = aws_cloudfront_origin_request_policy.all_headers.id
@@ -76,10 +76,6 @@ resource "aws_cloudfront_origin_request_policy" "all_headers" {
   query_strings_config {
     query_string_behavior = "all"
   }
-}
-
-data "aws_ip_ranges" "cloudfront" {
-  services = ["CLOUDFRONT"]
 }
 
 resource "aws_route53_record" "a_records" {
